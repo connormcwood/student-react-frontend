@@ -1,0 +1,76 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+
+.note-outer-body {
+  border: 1px solid #d3d3d3;
+  border-radius: 15px;
+  position: relative;
+  margin: 0.25em 0.125em;
+}
+.note-outer-body {
+  cursor: pointer;
+}
+
+.note-outer-body.sortable {
+  background: #d3d3d3;
+}
+
+.note-outer-body::after {
+  position: absolute;
+  right: 10px;
+  top: 22px;
+  transform: translate(-50%, -50%);
+
+  border-top: 8px solid transparent;
+  border-left: 8px solid #f00;  
+  border-bottom: 8px solid transparent;
+  content: " ";
+}
+
+.note-outer-body .above-fold {
+  margin: 0.15em 0.1em 0.05em 0.1em;
+}
+.note-outer-body .below-fold {
+  display: none;
+}
+
+.note-outer-body:not(.active):hover::after {
+  transform: rotate(90deg );
+  transform-origin: 50% 50%;
+  right: 15px;
+  top: calc(25px - 8px);
+}
+
+.note-outer-body.active:hover::after {
+  transform: rotate(-90deg);
+  right: 4px;
+  transform-origin: 50% 50%;
+  top: calc(25px - 8px);
+} 
+
+.note-outer-body.active .below-fold {
+  display: block;
+}
+
+.note-outer-body.active::after {
+  transform: none;
+}
+
+.note-outer-body.active::after {
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;  
+  border-top: 8px solid #f00;
+}
