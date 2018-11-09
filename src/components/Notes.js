@@ -55,6 +55,7 @@ class Notes extends React.Component {
         this.checkIfActive = this.checkIfActive.bind(this);
         this.displayNotes = this.displayNotes.bind(this);
         this.toggleReorder = this.toggleReorder.bind(this);
+        this.toggleRead = this.toggleRead.bind(this);
         this.toggleEdit = this.toggleEdit.bind(this);
         this.toggleRemove = this.toggleRemove.bind(this);
         this.toggleCreate = this.toggleCreate.bind(this);
@@ -71,20 +72,24 @@ class Notes extends React.Component {
         this.selectedNotes(value);
     };
     checkIfActive = (value) => {
-        const arrs = this.state.rows;
-        for(let i = 0 ; i < arrs.length; i++) {  
-            if(i === value && arrs[i].active === true) {
-                arrs[i].active = false;
-            } else if(i === value) {
-                arrs[i].active = true;
+        let arrs = this.state.rows;
+        for(let i = 0 ; i < arrs.length; i++) {
+            if(this.findWithinArray(i, value) !== false && value[0] === i) {
+                switch(arrs[i].active) {
+                    case true:
+                        arrs[i].active = false;
+                    break;
+                    case false:
+                        arrs[i].active = true;
+                    break;
+                }
             } else {
                 arrs[i].active = false;
-            }      
+            } 
         }
         this.setState(update(this.state.rows, {
             $set: {arrs}
         }), this.iterateNotes);
-        //this.setState({rows: arrs}, this.iterateNotes);
     };
     reorderByOrderProperty() {
         const rows = this.state.rows;
@@ -118,8 +123,7 @@ class Notes extends React.Component {
             } else if(this.state.reorder == true) {
                 rows.push(<SortableNote key={index} onClick={this.interactedWithNote} onCheckboxClick={this.onCheckboxClick} 
                     value={index} data={note} moveCard={this.moveNote} />);
-            }
- 
+            } 
         });
         this.setState({notes: rows}, this.displayNotes);     
     } 
@@ -138,6 +142,15 @@ class Notes extends React.Component {
             break;
         }        
     }
+    toggleRead(selected) {
+        console.log(selected);
+        if(selected > 1) {            
+            this.setState({selected: selected.slice(selected.length - 1, 1)}, () => this.checkIfActive(this.state.selected));
+        } else {
+            this.checkIfActive(selected);
+        }
+        
+    }
     toggleEdit() {
         const notes = this.selectedNotes();
     }
@@ -147,30 +160,35 @@ class Notes extends React.Component {
     toggleCreate() {
 
     }
-    findWithinArray(value) {
-        for(let i = 0; this.state.selected.length; i++) {
-            if(this.state.selected[i] == value) {
-                return i;
+    findWithinArray(value, array) {
+        if(array.length > 0) {
+            for(let i = 0; i < array.length; i++) {
+                if(array[i] === value) {
+                    return i;
+                }
             }
         }
         return false;
     }
     selectedNotes(value) {
-        const selectedArr = this.state.selected;
-        const posInArr = this.findWithinArray(value);
+        let selectedArr = this.state.selected;
+        const posInArr = this.findWithinArray(value, selectedArr);
         if(posInArr !== false) {
             selectedArr.splice(posInArr, 1);
-        } else {
+        } else {            
+            if(this.state.mode === 1 && selectedArr.length > 0) {
+                selectedArr.pop();   
+            }
             selectedArr.push(value);
         }
+
         this.setState({selected: selectedArr}, this.actionClick);
     }
     actionClick() {
         console.log("Action Click", this.state.mode, this.state.selected);
         switch(this.state.mode) {
             case 1:
-                console.log(this.state.selected);
-                this.checkIfActive(this.state.selected[0]);
+                this.toggleRead(this.state.selected);
             break;
             case 2:
 
