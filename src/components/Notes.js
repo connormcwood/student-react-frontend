@@ -1,53 +1,48 @@
 import * as React from 'react'
 import { DragDropContext } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
-import ItemTypes from '../helpers/ItemTypes';
 import Note from './Note';
 import SortableNote from './SortableNote';
 import update from 'immutability-helper';
+import NewModalNote from './modals/NewModalNote';
+import NotesRequest from './../requests/Notes';
+import PrioritiesRequest from './../requests/Priorities';
 
-let arr = [{
-        "title": "First Note",
-        "body": "Lorem Ipsum",
-        "order": 0,
-        "active": false,
-    },{
-        "title": "Second Note",
-        "body": "Lorem Ipsum",
-        "order": 1,
-        "active": false          
-    },{
-        "title": "Third Note",
-        "body": "Lorem Ipsum",
-        "order": 3,
-        "active": false  
-    },{
-        "title": "Fourth Note",
-        "body": "Lorem Ipsum",
-        "order": 2,
-        "active": false          
-    },{
-        "title": "Fifth Note",
-        "body": "Lorem Ipsum",
-        "order": 5,
-        "active": false  
-    },{
-        "title": "Sixth Note",
-        "body": "Lorem Ipsum",
-        "order": 4,
-        "active": false          
-    }];
-
-   
 class Notes extends React.Component {
     constructor(props) {
         super(props);
+
+        NotesRequest
+        .getNotes()
+        .then((result) => {
+            let rows = [];
+            for(let i = 0; i < result.length; i++) {
+                let item = result[i];
+                item.active = false;
+                item.body = item.content;
+                item.order = i;
+                rows[i] = item;
+            }
+            this.setState({ rows: rows}, this.iterateNotes);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+
         this.state = {
             reorder: false,
-            rows: arr,
+            rows: [],
             notes: [],
             selected: [],
-            mode: 1 //Types of Modes (1 => OPEN, 2 => EDIT, 3 => REMOVE)
+            mode: 1, //Types of Modes (1 => OPEN, 2 => EDIT, 3 => REMOVE)
+            modalIsOpen: false,
+            modal_type: {
+                create: false,
+                remove: false,
+                edit: false,
+                reorder: false
+            },
+            priorities: []
         };
         this.moveNote = this.moveNote.bind(this);
         this.interactedWithNote = this.interactedWithNote.bind(this);
@@ -61,13 +56,53 @@ class Notes extends React.Component {
         this.toggleCreate = this.toggleCreate.bind(this);
         this.selectedNotes = this.selectedNotes.bind(this);
 
+        this.actionRemove = this.actionRemove.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
+        this.getModalType = this.getModalType.bind(this);      
+
         let rows = [];
         this.state.rows.map( (note, index) => {
             rows.push(<Note key={index} onClick={this.interactedWithNote} onCheckboxClick={this.onCheckboxClick} 
             value={index} data={note} moveCard={this.moveNote}/>);
         });
         this.state.notes = rows;
+
+        this.openModal = this.openModal.bind(this);
+        this.afterOpenModal = this.afterOpenModal.bind(this);
+        this.closeModal = this.closeModal.bind(this);
     };
+ 
+    getPriorities() {
+        return this.state.priorities;
+    }
+
+    openModal() {
+      this.setState({modalIsOpen: true});
+    }
+  
+    afterOpenModal() {
+      // references are now sync'd and can be accessed.
+      this.subtitle.style.color = '#f00';
+    }
+  
+    closeModal() {
+      this.setState({modalIsOpen: false});
+    }
+
+    componentDidMount() {        
+        this.reorderByOrderProperty();
+
+        PrioritiesRequest
+        .getPriorities()
+        .then( (result) => {
+            this.setState({priorities: result}, this.getPriorities);
+        })
+        .catch( (err) => {
+            console.log(err);
+        });
+
+    }
+
     interactedWithNote = (value) => {
         this.selectedNotes(value);
     };
@@ -119,20 +154,19 @@ class Notes extends React.Component {
         this.state.rows.map( (note, index) => {
             if(this.state.reorder == false) {
                 rows.push(<Note key={index} onClick={this.interactedWithNote} onCheckboxClick={this.onCheckboxClick} 
-                    value={index} data={note} moveCard={this.moveNote} />);
+                    value={index} data={note} moveCard={this.moveNote}/>);
             } else if(this.state.reorder == true) {
                 rows.push(<SortableNote key={index} onClick={this.interactedWithNote} onCheckboxClick={this.onCheckboxClick} 
                     value={index} data={note} moveCard={this.moveNote} />);
             } 
         });
-        this.setState({notes: rows}, this.displayNotes);     
+        return rows;
     } 
     displayNotes() {
         return this.state.notes;
     }
     toggleReorder() {
         this.reorderByOrderProperty();
-        //console.log("Reorder", this.state.reorder);
         switch(this.state.reorder) {
             case true:
                 this.setState({reorder: false}, this.iterateNotes);
@@ -143,7 +177,6 @@ class Notes extends React.Component {
         }        
     }
     toggleRead(selected) {
-        console.log(selected);
         if(selected > 1) {            
             this.setState({selected: selected.slice(selected.length - 1, 1)}, () => this.checkIfActive(this.state.selected));
         } else {
@@ -152,14 +185,31 @@ class Notes extends React.Component {
         
     }
     toggleEdit() {
-        const notes = this.selectedNotes();
+        this.setState({mode: 2}, () => this.toggleModal("edit"));
     }
     toggleRemove() {
-        const notes = this.selectedNotes();
+        this.setState({mode: 3}, () => this.toggleModal("delete"));
     }
     toggleCreate() {
-
+        this.setState({mode: 1}, () => this.toggleModal("create"));
     }
+
+    actionRemove() {
+        console.log(this.state.selected);
+    }
+
+    toggleModal(type) {
+        let modal_type = this.state.modal_type;
+        console.log("Toggle Modal", this.state.modal_type);
+        modal_type[type] = !this.state.modal_type[type];
+        this.setState({modal_type: modal_type}, this.getModalType);
+    }
+
+    getModalType() {
+        console.log("Get Modal Type", this.state.modal_type.create);
+        return this.state.modal_type.create;
+    }
+
     findWithinArray(value, array) {
         if(array.length > 0) {
             for(let i = 0; i < array.length; i++) {
@@ -182,7 +232,22 @@ class Notes extends React.Component {
             selectedArr.push(value);
         }
 
-        this.setState({selected: selectedArr}, this.actionClick);
+        this.setState({selected: selectedArr}, () => {
+            this.highlightSelected();
+            this.actionClick()         
+        });
+    }
+    highlightSelected() {
+        let selected = this.state.selected;
+        let data = this.state.rows;
+        for(let i = 0; i < data.length; i++) {
+            if(this.findWithinArray(i, selected)) {
+                data[i].selected = true;
+            } else {
+                data[i].selected = false;
+            }
+        }
+        this.setState({rows: data}, this.iterateNotes);
     }
     actionClick() {
         console.log("Action Click", this.state.mode, this.state.selected);
@@ -190,13 +255,19 @@ class Notes extends React.Component {
             case 1:
                 this.toggleRead(this.state.selected);
             break;
-            case 2:
-
-            break;
-            case 3:
+            default:
 
             break;
         }
+    }
+    createButtons(mode) { //Types of Modes (1 => OPEN, 2 => EDIT, 3 => REMOVE)
+        return (
+        <div class="button-holder float-right">
+        <button type="button" className={(mode === 4)?"btn btn-warning active":"btn btn-warning"} onClick={this.toggleReorder}>Reorder</button>&nbsp;
+        <button type="button" className={(mode === 3)?"btn btn-danger active":"btn btn-danger"} onClick={this.toggleRemove}>Remove</button>&nbsp;
+        <button type="button" className={(mode === 1)?"btn btn-success active":"btn btn-success"} onClick={this.toggleCreate}>Create</button>&nbsp;
+        <button type="button" className={(mode === 2)?"btn btn-primary active":"btn btn-primary"} onClick={this.toggleEdit}>Edit</button>                    
+        </div> );
     }
   render() {
     const Notes = [];
@@ -215,10 +286,7 @@ class Notes extends React.Component {
                     </div>
                     <div class="col col-xs-12 col-sm-4">
                         <div class="button-holder float-right">
-                            <button type="button" class="btn btn-warning" onClick={this.toggleReorder}>Reorder</button>&nbsp;
-                            <button type="button" class="btn btn-danger" onClick={this.toggleRemove}>Remove</button>&nbsp;
-                            <button type="button" class="btn btn-success" onClick={this.toggleCreate}>Create</button>&nbsp;
-                            <button type="button" class="btn btn-primary" onClick={this.toggleEdit}>Edit</button>                    
+                            {this.createButtons(this.state.mode)}                 
                         </div>
                     </div>
                 </div>                      
@@ -228,11 +296,12 @@ class Notes extends React.Component {
             <div className="container">
                 <div class="container-drag">
                     <div className="dropable">
-                        { this.displayNotes() }
+                        { this.iterateNotes() }
                     </div>
                 </div>
             </div>
         </section>
+        <NewModalNote status={this.state.modal_type.create} getPriorities={this.getPriorities} data={this.state} toggleStatus={this.toggleCreate} />
       </div> 
     );
   }

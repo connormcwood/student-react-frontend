@@ -8,9 +8,14 @@ class Note extends Component {
             active: props.data.active,
             title: props.data.title,
             body: props.data.body,
+            selected: props.data.selected,
             defaultClass: "col col-xs-12 note-outer-body",
             classList: "col col-xs-12 note-outer-body"
         };
+        
+        this.state.selectedCss = (this.state.selected === true)?"selected":"";
+        this.state.defaultClass += this.state.selectedCss;
+        this.state.classList += this.state.selectedCss
         this.click = this.click.bind(this);
     }
     click() {
@@ -41,11 +46,8 @@ class Note extends Component {
                     </div>
                 </div>
                <div className="row below-fold">
-                <div className="col col-xs-12 col-sm-8">
-                    <p>{this.state.body}</p>
-                </div>
-                <div className="col col-xs-12 col-sm-4">
-                    <p>Right</p>
+                <div className="col col-xs-12 col-sm-12" dangerouslySetInnerHTML={{ __html: this.state.body}}>
+
                 </div>
               </div> 
             </div>
