@@ -39,7 +39,8 @@ class NewModalNote extends React.Component {
             options: DataConverter.optionsGenerator(props.priorities, "key", "title")
         };
 
-        this.toggleStatus = props.toggleStatus;       
+        this.toggleStatus = props.toggleStatus;      
+        this.retrieveNotes = props.getNotes; 
         this.closeModal = this.closeModal.bind(this);
         this.returnPriorities = this.returnPriorities.bind(this);
         this.updateContent = this.updateContent.bind(this);
@@ -76,7 +77,6 @@ class NewModalNote extends React.Component {
         } 
         if(typeof newProps.data.priorities !== 'undefined' && newProps.data.priorities.length > 0) {
             let options = DataConverter.optionsGenerator(newProps.data.priorities, "id", "title");
-            console.log(options);
             this.setState({ priorities: options });
         }    
     }
@@ -93,7 +93,9 @@ class NewModalNote extends React.Component {
         NotesRequest
         .postNotes(this.state.formData)
         .then( (result) => {
+            console.log("Submitted Form");            
             this.closeModal();
+            return this.retrieveNotes();
         })
         .catch( (error) => {
             console.log(error);

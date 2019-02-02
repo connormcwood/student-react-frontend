@@ -27,34 +27,33 @@ body {
     border-radius: 15px;
     position: relative;
     margin: 0.25em 0.125em;
-  }
-  .note-outer-body {
     cursor: pointer;
+    h3 {
+      margin: 0 0 0 8px;
+    }
+    &.sortable {
+      background: #d3d3d3;
+    }
+    .above-fold {
+      margin: 0.15em 0.1em 0.05em 0.1em;
+      padding: 0.25em 0;
+    }
+    .below-fold {
+      display: none;
+    }
+    &::after {
+      position: absolute;
+      right: 10px;
+      top: 22px;
+      transform: translate(-50%, -50%);
+    
+      border-top: 8px solid transparent;
+      border-left: 8px solid #f00;  
+      border-bottom: 8px solid transparent;
+      content: " ";
+    }
   }
-  
-  .note-outer-body.sortable {
-    background: #d3d3d3;
-  }
-  
-  .note-outer-body::after {
-    position: absolute;
-    right: 10px;
-    top: 22px;
-    transform: translate(-50%, -50%);
-  
-    border-top: 8px solid transparent;
-    border-left: 8px solid #f00;  
-    border-bottom: 8px solid transparent;
-    content: " ";
-  }
-  
-  .note-outer-body .above-fold {
-    margin: 0.15em 0.1em 0.05em 0.1em;
-  }
-  .note-outer-body .below-fold {
-    display: none;
-  }
-  
+
   .note-outer-body:not(.active):hover::after {
     transform: rotate(90deg );
     transform-origin: 50% 50%;

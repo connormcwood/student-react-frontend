@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import NoteHelper from '../helpers/NoteHelper'
 
 class Note extends Component {
     constructor(props) {
@@ -9,16 +10,20 @@ class Note extends Component {
             title: props.data.title,
             body: props.data.body,
             selected: props.data.selected,
-            defaultClass: "col col-xs-12 note-outer-body",
-            classList: "col col-xs-12 note-outer-body"
+            defaultClass: "flex-one note-outer-body",
+            classList: "flex-one note-outer-body",
+            priorityClass: "priority-container priority-" + props.data.priority.id,
+            priority: props.data.priority
         };
         
         this.state.selectedCss = (this.state.selected === true)?"selected":"";
         this.state.defaultClass += this.state.selectedCss;
         this.state.classList += this.state.selectedCss
-        this.click = this.click.bind(this);
+        this.getActive = this.getActive.bind(this);
+        //this.click = this.click.bind(this);
     }
     click() {
+        console.log("Called Click - Note.js");
         this.props.onClick(this.state.key);
     }
     isActive() {
@@ -27,30 +32,24 @@ class Note extends Component {
                 this.setState({classList: this.state.defaultClass + " active" });
             break;
             default:
-            this.setState({classList: this.state.defaultClass});
+                this.setState({classList: this.state.defaultClass});
             break;
         }
     }
+    getActive() {
+        return this.state.active;
+    }
     componentWillReceiveProps(props) {
         const {title, active, key, body} = this.props;
+        console.log("Note.js ", props.data);
         if(props.data.active !== active) {     
+            console.log("Note.js active")
             this.setState(props.data, this.isActive)
         }
     }
   render() {
         return (
-            <div className={this.state.classList} onClick={this.click}>
-                <div className="row above-fold">
-                    <div className="col-xs-12">
-                        <h3>{this.state.title}</h3>
-                    </div>
-                </div>
-               <div className="row below-fold">
-                <div className="col col-xs-12 col-sm-12" dangerouslySetInnerHTML={{ __html: this.state.body}}>
-
-                </div>
-              </div> 
-            </div>
+            <NoteHelper data={this.state} active={this.state.active} onClick={this.click.bind(this)} />
             );
   }
 }

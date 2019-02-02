@@ -1,0 +1,46 @@
+.relative {
+    position: relative;
+}
+
+.flex-grid {
+    display: flex;
+    &.vertical-flex {
+        flex-direction: column;
+    }
+}
+
+.flex-one {
+    flex: 1;
+}
+
+.priority-container {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translate(-35px, -52%);
+
+    &.priority-1, &.priority-2, &.priority-3 {
+        border: 1px solid;
+        padding: 4px 6px;
+        color: #FFF;
+        font-weight: bold;
+        border-radius: 10px;
+        font-size: 13px;
+    }
+
+    &.priority-1 {
+        background-color: #00335E;
+        border-color: #00335E;
+    }
+    
+    &.priority-2 {
+        background-color: #CA9B2D;
+        border-color: #CA9B2D;
+    }
+
+    &.priority-3 {
+        background-color: #890019;
+        border-color: #890019;
+    }
+}
+

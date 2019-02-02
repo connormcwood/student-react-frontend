@@ -14,6 +14,7 @@ import {
 } from 'react-dnd'
 import { XYCoord } from 'dnd-core'
 import flow from 'lodash/flow'
+import NoteHelper from '../helpers/NoteHelper'
 
 const cardSource = {
     beginDrag(props) {
@@ -96,8 +97,10 @@ class SortableNote extends Component {
             active: props.data.active,
             title: props.data.title,
             body: props.data.body,
-            defaultClass: "col col-xs-12 note-outer-body sortable",
-            classList: "col col-xs-12 note-outer-body sortable"
+            defaultClass: "flex-one note-outer-body sortable",
+            classList: "flex-one note-outer-body sortable",
+            priorityClass: "priority-container priority-" + props.data.priority.id,
+            priority: props.data.priority
         };
         this.click = this.click.bind(this);
     }
@@ -123,20 +126,8 @@ class SortableNote extends Component {
   render() {
     const { isDragging, connectDragSource, connectDropTarget } = this.props;
         return connectDragSource(connectDropTarget(
-            <div className={this.state.classList} onClick={this.click}>
-                <div className="row above-fold">
-                    <div className="col-xs-12">
-                        <h3>{this.state.title}</h3>
-                    </div>
-                </div>
-               <div className="row below-fold">
-                <div className="col col-xs-12 col-sm-8">
-                    <p>{this.state.body}</p>
-                </div>
-                <div className="col col-xs-12 col-sm-4">
-                    <p>Right</p>
-                </div>
-              </div> 
+            <div>
+            <NoteHelper data={this.state} onClick={this.onClick} />
             </div>
             ));
   }
