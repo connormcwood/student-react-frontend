@@ -150,8 +150,6 @@ class Notes extends React.Component {
     			}
     		}
 		}
-		
-
     	this.setState({rows: rows}, this.iterateNotes);    
 	}
 	updateOrder() {
@@ -180,7 +178,7 @@ class Notes extends React.Component {
     	this.setState(update(this.state.rows, {
     		dragIndex: {$set: {order: cards[hoverIndex].order }},
     		hoverIndex: {$set: {order: tempOrder}}
-    	}), this.reorderByOrderProperty);
+		}), this.reorderByOrderProperty);
     }
     iterateNotes() { 
     	let rows = [];
@@ -190,7 +188,7 @@ class Notes extends React.Component {
     				value={index} data={note} moveCard={this.moveNote}/>);
     		} else if(this.state.reorder == true) {
     			rows.push(<SortableNote key={index} onClick={this.interactedWithNote} onCheckboxClick={this.onCheckboxClick} 
-    				value={index} data={note} moveCard={this.moveNote} />);
+    				value={index} data={note} endReorder={this.toggleReorder} moveCard={this.moveNote} />);
     		} 
     	});
     	return rows;
@@ -362,7 +360,6 @@ class Notes extends React.Component {
     		Notes.push(<Note key={index} onClick={this.interactedWithNote} onCheckboxClick={this.onCheckboxClick} 
     			value={index} data={note} moveCard={this.moveNote} />);
     	});
-
     	return (
     		<div className="App">
     			<header className="App-header">

@@ -86,12 +86,21 @@ const cardTarget = {
       // to avoid expensive index searches.
       monitor.getItem().key = hoverIndex
     },
+    drop(props, monitor, component) {
+        if (monitor.didDrop()) {
+            // If you want, you can check whether some nested
+            // target already handled drop
+            return;
+          }
+          console.log("ELEMENT DROPPEd");
+          props.endReorder();
+          return { moved: true };
+    }
   }
 
 class SortableNote extends Component {
     constructor(props) {
         super(props);
-        console.log("Generated", props.value);
         this.state = {
             key: props.value,
             active: props.data.active,
@@ -114,9 +123,21 @@ class SortableNote extends Component {
             this.setState({classList: this.state.defaultClass});
         }
     }
-    /*componentWillUpdate(nextProps, nextState) {
-        console.log("Note upd: ", nextProps, nextState);
-    }*/
+    componentDidUpdate(prevProps) {
+        console.log(prevProps);
+        if (!prevProps.isOver && this.props.isOver) {
+            // You can use this as enter handler
+          }
+      
+          if (prevProps.isOver && !this.props.isOver) {
+            // You can use this as leave handler
+          }
+      
+          if (prevProps.isOverCurrent && !this.props.isOverCurrent) {
+            // You can be more specific and track enter/leave
+            // shallowly, not including nested targets
+          }
+    }
     componentWillReceiveProps(props) {
         const {title, active, key, body} = this.props;
         if(props.data.active !== active) {        

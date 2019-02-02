@@ -5,12 +5,13 @@ let activeClassName;
 class NoteHelper extends Component {
     constructor(props) {
         super(props);
+        console.log("HERE: ", this.props);
         this.state = {
             active: false,
             key: this.props.data.key,
             data: this.props.data,
-            defaultClass: "flex-one note-outer-body",
-            classList: "flex-one note-outer-body",
+            defaultClass: this.props.data.defaultClass,
+            classList: this.props.data.classList,
             priorityClass: "priority-container priority-" + props.data.priority.id,
         }
         if(typeof props.additionalCss !== "undefined") {
