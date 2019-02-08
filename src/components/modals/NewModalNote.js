@@ -20,12 +20,6 @@ const customStyles = {
     }
 };    
 
-const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' }
-  ];
-
 Modal.setAppElement("#root");
 
 class NewModalNote extends React.Component {
@@ -43,11 +37,19 @@ class NewModalNote extends React.Component {
         this.retrieveNotes = props.getNotes; 
         this.closeModal = this.closeModal.bind(this);
         this.returnPriorities = this.returnPriorities.bind(this);
+        this.returnActivePriority = this.returnActivePriority.bind(this);
         this.updateContent = this.updateContent.bind(this);
         this.submitForm = this.submitForm.bind(this);
     };
-
-    handleChange(prop, target) {
+    handleSelectUpdate = (selectedOption) => {
+        this.setState({selectedOption}, () => {
+            let value = {
+                value: selectedOption.value
+            }
+            this.handleChange("priorities", value)
+        })
+    }
+    handleChange = (prop, target) => {
         let value;
         switch(prop) {
             case "title": 
@@ -55,6 +57,7 @@ class NewModalNote extends React.Component {
             break;
             case "priorities":
                 value = target.value;
+                this.setState({activePriority: value}, () => console.log(this.state.activePriority));
             break;
             default:
 
@@ -62,9 +65,10 @@ class NewModalNote extends React.Component {
         }
         let formData = this.state.formData;
         formData[prop] = value;
-        this.setState({formData: formData}, console.log(this.state.formData)); 
+        this.setState({formData: formData}, () => {
+            console.log(this.state.formData);            
+        });
     }
-
     updateContent(value) {
         let formData = this.state.formData;
         formData.content = value;
@@ -79,6 +83,10 @@ class NewModalNote extends React.Component {
             let options = DataConverter.optionsGenerator(newProps.data.priorities, "id", "title");
             this.setState({ priorities: options });
         }    
+    }
+
+    returnActivePriority() {
+        return this.state.formData.priorities;
     }
 
     returnPriorities() {
@@ -117,39 +125,38 @@ class NewModalNote extends React.Component {
         style={customStyles}
         contentLabel="Example Modal"
         >
-
-        <a className="close-button" onClick={() => this.toggleStatus()} >X</a>
-
-        <Container>
-            <Row>
-                <Col sm={9}>
+        <div className="button-container">
+            <a className="close-button" onClick={() => this.toggleStatus()} >X</a>        
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
                     <Input type="text" name="title" onChange={(e) => this.handleChange("title", e) } placeholder="Title" />
-                </Col>
-            </Row>
-            <Row>
-                <Col sm={12}>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
                     <Select 
                         value={selectedOption}
-                        onChange={(e) => this.handleChange("priorities", e) }
+                        onChange={this.handleSelectUpdate}
                         options={this.state.priorities}
+                        className="select-box"
                     />
-                </Col>
-            </Row>
-            <Row>
-                <Col sm={12}>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
                     <MyEditor updateContent={this.updateContent} />
-                </Col>
-            </Row>
-            <Row>
-                <Col sm={12}>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
                     <div className="">
                         <button onClick={this.submitForm} className="submit">Submit</button>
                     </div>
-                </Col>
-            </Row>
-
-        </Container>
-
+                </div>
+            </div>           
+        </div>
         </Modal>
     );
   }

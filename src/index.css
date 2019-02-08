@@ -31,6 +31,14 @@
     background-color: #890019;
     border-color: #890019; }
 
+.button-container {
+  position: relative;
+  margin-bottom: 25px; }
+  .button-container .close-button {
+    position: absolute;
+    right: 20px;
+    cursor: pointer; }
+
 .test {
   background-color: green; }
 
@@ -54,6 +62,8 @@ code {
   margin: 0.25em 0.125em;
   cursor: pointer; }
   .note-outer-body h3 {
+    margin: 0 0 0 8px; }
+  .note-outer-body .container-padding {
     margin: 0 0 0 8px; }
   .note-outer-body.sortable {
     background: #d3d3d3; }

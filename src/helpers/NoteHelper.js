@@ -53,8 +53,8 @@ class NoteHelper extends Component {
                 </div>
             </div>
             <div className="flex-grid vertical-flex below-fold">
-                <div className="flex-one" dangerouslySetInnerHTML={{ __html: this.state.data.body}}>
-        
+                <div className="flex-one container-padding" dangerouslySetInnerHTML={{ __html: this.state.data.body}}>
+                
                 </div>
             </div> 
         </div>

@@ -268,7 +268,9 @@ class Notes extends React.Component {
     		let selected = this.state.selected;
 			for(let i = 0; i < selected.length; i++) {
 				let index = selected[i];
-				nids.push(this.state.rows[index].id)
+				let rowIndex = this.state.rows[index].id;
+				console.log("HERE: ", this.state.rows[rowIndex]);
+				nids.push(this.state.rows[index].id);
 			}
 			this.setState({mode: 1, prevMode: null, selected: []}, () => this.removeNotes(nids) );
     	}

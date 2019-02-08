@@ -1,0 +1,10 @@
+
+.button-container {
+    position: relative;
+    margin-bottom: 25px;
+    .close-button {
+        position: absolute;
+        right: 20px;
+        cursor: pointer;
+    }   
+}

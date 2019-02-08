@@ -23,7 +23,6 @@ class Note extends Component {
         //this.click = this.click.bind(this);
     }
     click() {
-        console.log("Called Click - Note.js");
         this.props.onClick(this.state.key);
     }
     isActive() {
@@ -41,9 +40,7 @@ class Note extends Component {
     }
     componentWillReceiveProps(props) {
         const {title, active, key, body} = this.props;
-        console.log("Note.js ", props.data);
         if(props.data.active !== active) {     
-            console.log("Note.js active")
             this.setState(props.data, this.isActive)
         }
     }
