@@ -106,13 +106,13 @@ class Notes extends React.Component {
 		this.reorderByOrderProperty();
 
 		PrioritiesRequest
-			.getPriorities()
-			.then( (result) => {
-				this.setState({priorities: result}, this.getPriorities);
-			})
-			.catch( (err) => {
-				console.log(err);
-			});
+		.getPriorities()
+		.then( (result) => {
+			this.setState({priorities: result}, this.getPriorities);
+		})
+		.catch( (err) => {
+			console.log("Error with Priorities", err);
+		});
 
 	}
 
@@ -200,14 +200,14 @@ class Notes extends React.Component {
 			this.retrieveNotes();
 		})
 		.catch((err) => {
-			console.log(err);
+			console.log("Error Removing Notes", err);
 		})
 	}
 	retrieveNotes() {
 		NotesRequest
 		.getNotes()
 		.then((result) => {
-			console.log("Retrieve Notes")
+			console.log("Retrieve Notes: ", result)
 			let rows = [];
 			for(let i = 0; i < result.length; i++) {
 				let item = result[i];
@@ -216,7 +216,7 @@ class Notes extends React.Component {
 				item.order = i;
 				rows[i] = item;
 			}
-			console.log(result);
+
 			for(let i = 0; i < result.length; i++) {
 				for(let k = 0; k < result.length; k++) {
 					if(k !== result.length && result[k].order > result[k + 1].order) {
@@ -230,7 +230,7 @@ class Notes extends React.Component {
 			this.setState({ rows: rows}, this.iterateNotes);
 		})
 		.catch((err) => {
-			console.log(err);
+			console.log("Error Retrieving Notes: ", err);
 		});
 	}
     displayNotes() {

@@ -66,13 +66,13 @@ class NewModalNote extends React.Component {
         let formData = this.state.formData;
         formData[prop] = value;
         this.setState({formData: formData}, () => {
-            console.log(this.state.formData);            
+           
         });
     }
     updateContent(value) {
         let formData = this.state.formData;
         formData.content = value;
-        this.setState({formData: formData}, console.log(this.state.formData));
+        this.setState({formData: formData});
     }
 
     componentWillReceiveProps(newProps) {
@@ -101,9 +101,8 @@ class NewModalNote extends React.Component {
         NotesRequest
         .postNotes(this.state.formData)
         .then( (result) => {
-            console.log("Submitted Form");            
+            console.log("Submitted Form", result);            
             this.closeModal();
-            return this.retrieveNotes();
         })
         .catch( (error) => {
             console.log(error);
